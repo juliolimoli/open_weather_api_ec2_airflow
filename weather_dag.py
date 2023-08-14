@@ -3,7 +3,7 @@ from airflow.providers.http.sensors.http import HttpSensor
 from datetime import datetime, timedelta
 import json
 
-api_key = open("../keys/weather.txt", "r").readline()
+api_key = open("/home/ubuntu/airflow/keys/weather.txt", "r").readline()
 
 default_args = {
     'owner': 'airflow',
