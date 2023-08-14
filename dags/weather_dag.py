@@ -1,8 +1,14 @@
+import sys
+projects_modules = sys.path.insert(0, '/home/ubuntu/airflow_projects')
+from transform_load_data import transform_load_data_func
 from airflow import DAG
 from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.operators.http import SimpleHttpOperator
+from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 import json
+import pandas as pd
+
 
 api_key = open("/home/ubuntu/airflow/keys/weather.txt", "r").readline()
 
@@ -38,3 +44,9 @@ with DAG(
         response_filter=lambda r: json.loads(r.text),
         log_response=True
     )
+
+    transform_load_weather_data = PythonOperator(
+        task_id='transform_load_weather_data',
+        python_callable=transform_load_data_func
+    )
+    is_weather_api_ready >> extract_weather_data
