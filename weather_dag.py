@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.provider.http.sensors.http import HttpSensor
+from airflow.providers.http.sensors.http import HttpSensor
 from datetime import datetime, timedelta
 import json
 
