@@ -2,7 +2,7 @@ def kelvin_to_fahrenheit(temp_in_kelvin):
     temp_in_fahrenheit = (temp_in_kelvin - 273.15) * (9/5) + 32
     return temp_in_fahrenheit
 
-def transform_load_data_func():
+def transform_load_data_func(task_instance):
     data = task_instance.xcom_pull(task_ids="extract_weather_data")
     city = data["name"]
     weather_description = data["weather"][0]['description']

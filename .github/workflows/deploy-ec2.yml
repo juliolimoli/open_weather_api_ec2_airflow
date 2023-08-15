@@ -11,13 +11,48 @@ jobs:
     - name: Checkout the files
       uses: actions/checkout@v3
 
-    - name: Copy files with SSH
+    - name: Check for DAGs Changes
+      id: check_changes_in_dag_folder
+      run: |
+        if git diff --quiet --exit-code HEAD^ -- 'dags/'; then
+          echo "No changes in the 'dags' folder."
+          echo "::set-output name=dags_changes::false"
+        else
+          echo "Changes found in the 'dags' folder."
+          echo "::set-output name=dags_changes::true"
+        fi
+
+    - name: Check for Projects Changes
+      id: check_changes_in_src_folder
+      run: |
+        if git diff --quiet --exit-code HEAD^ -- 'src/'; then
+          echo "No changes in the 'src' folder."
+          echo "::set-output name=src_changes::false"
+        else
+          echo "Changes found in the 'src' folder."
+          echo "::set-output name=src_changes::true"
+        fi
+
+    - name: Copy DAGs files with SSH
+      if: ${{ steps.check_changes_in_dag_folder.outputs.dags_changes == 'true' }}
       uses: easingthemes/ssh-deploy@main
       env:
         SSH_PRIVATE_KEY: ${{secrets.EC2_SSH_KEY}}
-        ARGS: "-rltgoDzvO --delete"
-        SOURCE: "./"
+        ARGS: "-av --delete"
+        SOURCE: "dags/"
         REMOTE_HOST: ${{secrets.REMOTE_HOST}}
         REMOTE_USER: ${{secrets.REMOTE_USER}}
         TARGET: "/home/ubuntu/airflow/dags"
-        EXCLUDE: "README.md"
+        EXCLUDE: "README.md, __pycache__, .git/, .github/, .gitignore, src/"
+
+    - name: Copy Python projects files with SSH
+      if: ${{ steps.check_changes_in_src_folder.outputs.src_changes == 'true' }}
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{secrets.EC2_SSH_KEY}}
+        ARGS: "-av --delete"
+        SOURCE: "src/"
+        REMOTE_HOST: ${{secrets.REMOTE_HOST}}
+        REMOTE_USER: ${{secrets.REMOTE_USER}}
+        TARGET: "/home/ubuntu/airflow/src"
+        EXCLUDE: "README.md, __pycache__, .git/, .github/, .gitignore, dags/"
