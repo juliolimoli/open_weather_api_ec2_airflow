@@ -49,4 +49,4 @@ with DAG(
         task_id='transform_load_weather_data',
         python_callable=transform_load_data_func
     )
-    is_weather_api_ready >> extract_weather_data
+    is_weather_api_ready >> extract_weather_data >> transform_load_weather_data

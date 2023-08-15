@@ -54,5 +54,5 @@ jobs:
         SOURCE: "src/"
         REMOTE_HOST: ${{secrets.REMOTE_HOST}}
         REMOTE_USER: ${{secrets.REMOTE_USER}}
-        TARGET: "/home/ubuntu/airflow/src"
+        TARGET: "/home/ubuntu/airflow_projects"
         EXCLUDE: "README.md, __pycache__, .git/, .github/, .gitignore, dags/"
